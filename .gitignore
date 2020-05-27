@@ -1,0 +1,5 @@
+.vscode
+debug.test
+testdata/
+cover.out
+cover.html
