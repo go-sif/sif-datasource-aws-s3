@@ -59,7 +59,7 @@ func (pl *PartitionLoader) ToString() string {
 // Load is capable of loading partitions of data from a file
 func (pl *PartitionLoader) Load(parser sif.DataSourceParser, widestInitialSchema sif.Schema) (sif.PartitionIterator, error) {
 	if pl.downloadChan == nil {
-		pl.downloadChan = make(chan *downloadedFile, 5)
+		pl.downloadChan = make(chan *downloadedFile, pl.source.conf.PrefetchLimit)
 		go pl.asyncDownload()
 	}
 	return &s3PartitionIterator{

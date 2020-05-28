@@ -1,6 +1,7 @@
 package s3
 
 import (
+	"log"
 	"regexp"
 
 	"github.com/aws/aws-sdk-go/aws/session"
@@ -27,12 +28,26 @@ type DataSourceConf struct {
 	// be assigned as a batch to a Sif worker at one time. Files are assigned in batches
 	// so that workers can download and parse files concurrently.
 	KeyBatchSize int64
-	Session      *session.Session
-	Decoder      func([]byte) ([]byte, error)
+	// PrefetchLimit is a limit on the number of files which workers will prefetch and store in memory
+	PrefetchLimit int
+	Session       *session.Session
+	Decoder       func([]byte) ([]byte, error)
 }
 
 // CreateDataFrame is a factory for DataSources
 func CreateDataFrame(conf *DataSourceConf, parser sif.DataSourceParser, schema sif.Schema) sif.DataFrame {
+	if conf.PrefetchLimit == 0 {
+		conf.PrefetchLimit = 2
+	}
+	if conf.KeyBatchSize == 0 {
+		conf.KeyBatchSize = 1000
+	}
+	if conf.Session == nil {
+		log.Fatalf("DataSourceConf.Session must be an aws session.Session, but was nil")
+	}
+	if len(conf.Bucket) == 0 {
+		log.Fatalf("DataSourceConf.Bucket must be a bucket name")
+	}
 	source := &DataSource{conf: conf, parser: parser, schema: schema}
 	df := datasource.CreateDataFrame(source, parser, schema)
 	return df
