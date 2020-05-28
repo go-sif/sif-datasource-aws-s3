@@ -33,6 +33,9 @@ func (pl *PartitionLoader) asyncDownload() {
 		Key:          nil,
 	}
 	for _, k := range pl.keys {
+		if pl.source.conf.Filter != nil && !pl.source.conf.Filter.MatchString(k) {
+			continue
+		}
 		buff := &aws.WriteAtBuffer{}
 		req.Key = aws.String(k)
 		nbytes, err := pl.downloader.Download(buff, req)

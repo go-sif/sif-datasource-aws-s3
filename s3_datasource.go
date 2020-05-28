@@ -1,6 +1,8 @@
 package s3
 
 import (
+	"regexp"
+
 	"github.com/aws/aws-sdk-go/aws/session"
 
 	"github.com/go-sif/sif"
@@ -19,6 +21,7 @@ type DataSourceConf struct {
 	Bucket string
 	// Prefix limits the response to keys prefixed by this string
 	Prefix       string
+	Filter       *regexp.Regexp
 	RequestPayer string
 	// KeyBatchSize must be less than 1000 and represents the number of documents which will
 	// be assigned as a batch to a Sif worker at one time. Files are assigned in batches

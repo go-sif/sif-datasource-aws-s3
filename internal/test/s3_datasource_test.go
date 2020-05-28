@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"regexp"
 	"testing"
 
 	"github.com/aws/aws-sdk-go/aws"
@@ -95,6 +96,7 @@ func TestS3Datasource(t *testing.T) {
 	source := sifs3.CreateDataFrame(&sifs3.DataSourceConf{
 		Bucket:       "testbucket",
 		Prefix:       "files",
+		Filter:       regexp.MustCompile(".*\\.jsonl"),
 		KeyBatchSize: 2,
 		Session:      sess,
 	}, jsonl.CreateParser(&jsonl.ParserConf{
